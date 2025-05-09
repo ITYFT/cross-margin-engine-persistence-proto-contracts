@@ -1,0 +1,143 @@
+syntax = "proto3";
+package cross_margin_engine_persistence;
+import "google/protobuf/empty.proto";
+
+message TradingEngineTradePersistenceGrpcModel {
+  string id = 1;
+  string trader_id = 2;
+  string account_id = 3;
+  string asset_pair = 4;
+  string order_id = 5;          
+  string position_id = 6;       
+  double price = 7;
+  double pl = 8;
+  double fee = 9;
+  double lots_amount = 10;
+  int64 create_date = 11;
+  string create_process_id = 12;
+  bool is_buy = 13;
+}
+
+
+message TradingEngineBidAskGrpcModel {
+  string asset_pair = 1;
+  double bid = 2;
+  double ask = 3;
+  int64 date = 4;
+}
+
+message TradingEnginePositionSwap {
+  double amount = 1;
+  int64 date = 2;
+}
+
+message TradingEnginePositionPersistenceGrpcModel {
+  string id = 1;
+  string trader_id = 2;
+  string account_id = 3;
+  string asset_pair = 4;
+  string collateral = 5;
+  double lots_amount = 6;
+  bool is_buy = 7;
+  bool is_abook = 8;
+  optional double sl_price = 9;
+  optional double tp_price = 10;
+
+  map<string, string> metadata = 11;
+
+  optional string order_id = 12;
+
+  TradingEngineBidAskGrpcModel margin_bidask = 13;
+  TradingEngineBidAskGrpcModel open_bidask = 14;
+  TradingEngineBidAskGrpcModel profit_bidask = 15;
+  TradingEngineBidAskGrpcModel active_bidask = 16;
+
+  double commission = 17;
+  double pl = 18;
+
+  repeated TradingEnginePositionSwap swaps = 19;
+
+  int64 create_date = 20;
+  int64 update_date = 21;
+
+  string create_process_id = 22;
+  string update_process_id = 23;
+}
+
+enum OrderType {
+  MARKET = 0;
+  LIMIT = 1;
+  STOP = 2;
+}
+
+enum PositionStatus {
+  PENDING = 0;
+  CANCELED = 1;
+  EXECUTED = 2;
+  REJECTED = 3;
+}
+
+message TradingEngineOrderPersistenceGrpcModel {
+  string id = 1;
+  string trader_id = 2;
+  string account_id = 3;
+  string asset_pair = 4;
+  string collateral = 5;
+  double lots_amount = 6;
+  bool is_buy = 7;
+  bool is_abook = 8;
+
+  optional double sl_price = 9;
+  optional double tp_price = 10;
+
+  map<string, string> metadata = 11;
+
+  OrderType order_type = 12;
+  PositionStatus position_status = 13;
+
+  int64 create_date = 14;
+  int64 update_date = 15;
+
+  string create_process_id = 16;
+  string update_process_id = 17;
+
+  optional double desired_price = 18;
+}
+
+enum TradingAccountStatus {
+  ACTIVE = 0;
+  DISABLED = 1;
+  ARCHIVED = 2;
+}
+
+enum TradingAccountHedgeMode {
+  NETTING = 0;
+  HEDGING = 1;
+}
+
+message TradingEngineAccountPersistenceGrpcModel {
+  string id = 1;
+  string trader_id = 2;
+  string currency = 3;
+  double balance = 4;
+  double leverage = 5;
+  string trading_group = 6;
+
+  int64 create_date = 7;
+  int64 last_update_date = 8;
+  string last_update_process_id = 9;
+
+  map<string, string> metadata = 10;
+
+  TradingAccountStatus status = 11;
+  TradingAccountHedgeMode hedge_mode = 12;
+}
+
+
+service CrossMarginEnginePersistenceService {
+    rpc GetActivePositions(google.protobuf.Empty) returns (stream TradingEnginePositionPersistenceGrpcModel);
+    rpc GetAllTrades(google.protobuf.Empty) returns (stream TradingEngineTradePersistenceGrpcModel);
+    rpc GetPendingOrders(google.protobuf.Empty) returns (stream TradingEngineOrderPersistenceGrpcModel);
+    rpc GetAllAccounts(google.protobuf.Empty) returns (stream TradingEngineAccountPersistenceGrpcModel);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
