@@ -1,5 +1,5 @@
 syntax = "proto3";
-package crossmarginenginepersistence;
+package trading_engine_persistence;
 
 import "google/protobuf/empty.proto";
 
