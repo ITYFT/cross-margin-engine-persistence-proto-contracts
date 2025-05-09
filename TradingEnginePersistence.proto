@@ -135,15 +135,8 @@ message TradingEngineAccountPersistenceGrpcModel {
   TradingAccountHedgeMode HedgeMode = 12;
 }
 
-enum PendingPositionStatus {
-  Pending = 0;
-  Canceled = 1;
-  Executed = 2;
-  Rejected = 3;
-}
-
 message GetOrdersFilterRequest {
-  PendingPositionStatus status = 1;
+  PositionStatus status = 1;
 }
 
 
