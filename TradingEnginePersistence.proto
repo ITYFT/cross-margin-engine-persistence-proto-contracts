@@ -115,6 +115,8 @@ enum TradingAccountHedgeMode {
   Hedging = 1;
 }
 
+
+
 message TradingEngineAccountPersistenceGrpcModel {
   string Id = 1;
   string TraderId = 2;
@@ -133,10 +135,22 @@ message TradingEngineAccountPersistenceGrpcModel {
   TradingAccountHedgeMode HedgeMode = 12;
 }
 
+enum PendingPositionStatus {
+  Pending = 0;
+  Canceled = 1;
+  Executed = 2;
+  Rejected = 3;
+}
+
+message GetOrdersFilterRequest {
+  PendingPositionStatus status = 1;
+}
+
+
 service CrossMarginEnginePersistenceService {
-  rpc GetActivePositions(google.protobuf.Empty) returns (stream TradingEnginePositionPersistenceGrpcModel);
+  rpc GetAllPositions(google.protobuf.Empty) returns (stream TradingEnginePositionPersistenceGrpcModel);
   rpc GetAllTrades(google.protobuf.Empty) returns (stream TradingEngineTradePersistenceGrpcModel);
-  rpc GetPendingOrders(google.protobuf.Empty) returns (stream TradingEngineOrderPersistenceGrpcModel);
+  rpc GetAllOrders(GetOrdersFilterRequest) returns (stream TradingEngineOrderPersistenceGrpcModel);
   rpc GetAllAccounts(google.protobuf.Empty) returns (stream TradingEngineAccountPersistenceGrpcModel);
   rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
